@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const Expense = new Schema(
+const Income = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", index: true },
     amount: { type: Number, required: true },
-    categoryTags: {
-      type: [String],
-      enum: ["Food", "Transportation", "Bills", "Entertainment", "Other"],
+    source: {
+      type: String,
+      enum: ["Salary", "Investments", "Freelance", "Other"],
+      required: true,
     },
     description: String,
     paymentMethod: {
@@ -19,23 +20,26 @@ const Expense = new Schema(
     recurringPeriod: {
       type: String,
       enum: ["daily", "weekly", "monthly", "yearly"],
-      default: null,
-      validate: {
-        validator: function () {
-          return this.isRecurring ? this.recurringPeriod !== null : true;
-        },
-        message: "Recurring period must be set for recurring expenses.",
-      },
+      default: null, // Null for one-time incomes
     },
     notes: String,
     status: {
       type: String,
-      enum: ["paid", "pending", "overdue"],
-      default: "pending",
+      enum: ["recieved", "pending", "overdue"],
+      default: "recieved",
     },
     date: { type: Date, default: Date.now },
+    nextPaymentDate: {
+      type: Date,
+      validate: {
+        validator: function () {
+          return this.isRecurring ? this.nextPaymentDate !== null : true;
+        },
+        message: "Next payment date must be set for recurring incomes.",
+      },
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("expense", Expense);
+export default mongoose.model("income", Income);

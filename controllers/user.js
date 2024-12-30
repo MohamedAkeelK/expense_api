@@ -94,5 +94,3 @@ export const verify = async (req, res) => {
     res.status(401).send("Not Authorized");
   }
 };
-
-export const changePassword = async (req, res) => {};
