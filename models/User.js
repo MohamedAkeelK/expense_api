@@ -12,7 +12,7 @@ const User = new Schema(
     email: { type: String, required: true, unique: true },
     password_digest: { type: String, required: true, select: false },
     profilePicture: { type: String },
-    dob: Date,
+    dob: { type: Date, default: null },
     totalMoney: { type: Number, default: 0 },
   },
   { timestamps: true }

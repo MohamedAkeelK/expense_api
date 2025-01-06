@@ -30,6 +30,8 @@ export const signUp = async (req, res) => {
       password_digest: password_hashed,
       profielPicture:
         "https://www.pngkey.com/png/detail/839-8393808_user-male-silhouette-comments-blank-person.png",
+      dob: "",
+      totalMoney: 1200
     });
 
     await user.save();
@@ -38,7 +40,7 @@ export const signUp = async (req, res) => {
       id: user._id,
       username: user.username,
       email: user.email,
-      profilePicture: user.profilePicture,
+      profilePicture: user.profilePicture, 
       // projects: [],
       exp: parseInt(exp.getTime() / 1000),
     };

@@ -8,7 +8,15 @@ const Expense = new Schema(
     amount: { type: Number, required: true },
     categoryTags: {
       type: [String],
-      enum: ["Food", "Transportation", "Bills", "Entertainment", "Other"],
+      enum: [
+        "Food",
+        "Transportation",
+        "Bills",
+        "Rent",
+        "Entertainment",
+        "Groceries",
+        "Other",
+      ],
     },
     description: String,
     paymentMethod: {

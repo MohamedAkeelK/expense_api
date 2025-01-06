@@ -14,7 +14,7 @@ const Income = new Schema(
     description: String,
     paymentMethod: {
       type: String,
-      enum: ["cash", "credit", "debit"],
+      enum: ["cash", "credit", "debit", "bank transfer"],
     },
     isRecurring: { type: Boolean, default: false },
     recurringPeriod: {
