@@ -2,9 +2,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js";
-import Expense from "../models/Expense.js";
-import Income from "../models/Income.js";
-import Goal from "../models/Goal.js";
 
 // for development purposes
 let SALT_ROUNDS = 11;
@@ -70,7 +67,7 @@ export const signIn = async (req, res) => {
       return res.status(400).send("Email and password are required");
     }
 
-    console.log("Incoming sign-in request:", req.body); // Debug request body
+    console.log("Incoming sign-in request:", req.body);
 
     const user = await User.findOne({ email }).select(
       "username email password_digest totalMoney"
@@ -106,7 +103,6 @@ export const signIn = async (req, res) => {
       email: user.email,
       dob: user.dob,
       totalMoney: user.totalMoney || 0, // Default to 0 if undefined
-      // token: TOKEN_KEY,
     });
   } catch (error) {
     console.error("Error in signIn:", error.message);
