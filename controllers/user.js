@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js";
+import Expense from "../models/Expense.js";
+import Income from "../models/Income.js";
+import Goal from "../models/Goal.js";
 
 // for development purposes
 let SALT_ROUNDS = 11;
@@ -121,5 +124,35 @@ export const verify = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(401).send("Not Authorized");
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Ensure the authenticated user can only access their own profile
+    if (req.user.id !== id) {
+      return res
+        .status(403)
+        .send("Forbidden: You do not have access to this user's data");
+    }
+
+    const user = await User.findById(id).select("-password_digest");
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.status(200).json({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      dob: user.dob,
+      totalMoney: user.totalMoney,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
