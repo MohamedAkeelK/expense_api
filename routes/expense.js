@@ -1,14 +1,14 @@
 import { Router } from "express";
 import * as expenseController from "../controllers/expense.js";
-// import restrict from "../helpers/restrict.js";
+import restrict from "../helpers/restrict.js";
 
 const router = Router();
 
 // Expense routes
 
-router.get("/", expenseController.getExpenseAll); // Get all expenses for the authenticated user
-router.get("/:id", expenseController.getExpense); // Get a single expense by ID
-router.post("/", expenseController.createExpense); // Create a new expense
+// router.get("/", expenseController.getExpenseAll); // Get all expenses for the authenticated user
+router.get("/:id", restrict, expenseController.getExpensesByUser); // Get a single expense by ID
+router.post("/", restrict, expenseController.createExpense); // Create a new expense
 // router.put("/:id", expenseController.updateExpense); // Update an expense
 // router.delete("/:id", expenseController.deleteExpense); // Delete an expense
 

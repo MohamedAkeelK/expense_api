@@ -1,7 +1,6 @@
 import { Router } from "express";
 import * as userController from "../controllers/user.js";
-import { restrict } from "../helpers/restrict.js";
-
+import restrict from "../helpers/restrict.js";
 const router = Router();
 
 // User routes

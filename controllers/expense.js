@@ -1,59 +1,60 @@
 import Expense from "../models/Expense.js";
 // import restrict from "../helpers/restrict.js";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 
-export const getExpenseAll = async (req, res) => {
-  try {
-    const expenses = await Expense.find();
-    res.json(expenses);
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: error.message });
-  }
-};
+// export const getExpenseAll = async (req, res) => {
+//   try {
+//     const expenses = await Expense.find();
+//     res.json(expenses);
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
-export const getExpense = async (req, res) => {
+export const getExpensesByUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const expense = await Expense.findById(id);
-    if (expense) {
-      return res.json(expense);
+    console.log("Request Params:", req.params); // Log params to debug
+
+    const { id } = req.params; // Using "id" directly
+    console.log("Received User ID:", id);
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ error: "Invalid User ID" });
     }
-    res.status(404).json({ message: "Expense not found!" });
+
+    const expenses = await Expense.find({ userId: id }).sort({ date: -1 });
+    console.log("Fetched Expenses:", expenses);
+
+    if (expenses.length > 0) {
+      return res.status(200).json(expenses);
+    }
+
+    res.status(404).json({ message: "No expenses found for this user!" });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
 export const createExpense = async (req, res) => {
   try {
-    // Check if a expense with the same name already exists
-    // const existingExpense = await Expense.findOne({ name: req.body.name });
-    // if (existingExpense) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Project with this name already exists" });
-    // }
+    const userId = req.user.id; // Extract user ID from authenticated request (JWT middleware must add `req.user`)
 
-    // Create a new expense
-    const expenseData = { ...req.body, userId: req.user.id };
+    // Add the userId to the expense data
+    const expenseData = { ...req.body, userId };
+
+    // Create and save the expense
     const expense = new Expense(expenseData);
     await expense.save();
 
-    const userId = req.user.id;
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    user.Expenses.push(expense._id);
-    await user.save();
-
-    res.status(201).json(expense);
+    res.status(201).json({
+      message: "Expense created successfully",
+      expense,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error.message);
     res.status(500).json({ error: error.message });
   }
 };
