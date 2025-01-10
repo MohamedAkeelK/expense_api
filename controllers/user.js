@@ -110,6 +110,7 @@ export const signIn = async (req, res) => {
   }
 };
 
+// Verify 
 export const verify = async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
@@ -123,6 +124,7 @@ export const verify = async (req, res) => {
   }
 };
 
+// Get user profile
 export const getUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
