@@ -1,18 +1,8 @@
 import Expense from "../models/Expense.js";
-// import restrict from "../helpers/restrict.js";
-// import User from "../models/User.js";
 import mongoose from "mongoose";
+import User from "../models/User.js";
 
-// export const getExpenseAll = async (req, res) => {
-//   try {
-//     const expenses = await Expense.find();
-//     res.json(expenses);
-//   } catch (error) {
-//     console.log(error.message);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
+// Get all users expenses
 export const getExpensesByUser = async (req, res) => {
   try {
     console.log("Request Params:", req.params); // Log params to debug
@@ -38,9 +28,12 @@ export const getExpensesByUser = async (req, res) => {
   }
 };
 
+// add a new expense
 export const createExpense = async (req, res) => {
   try {
     const userId = req.user.id; // Extract user ID from authenticated request (JWT middleware must add `req.user`)
+    // Fetch the user's details
+    const user = await User.findById(userId);
 
     // Add the userId to the expense data
     const expenseData = { ...req.body, userId };
@@ -48,8 +41,16 @@ export const createExpense = async (req, res) => {
     // Create and save the expense
     const expense = new Expense(expenseData);
     await expense.save();
+    await User.findByIdAndUpdate(userId, {
+      $inc: { totalMoney: -expense.amount },
+    });
 
     res.status(201).json({
+      user: {
+        name: user.username, // Assuming the field for the user's name is `username`
+        email: user.email,
+        totalMoney: user.totalMoney,
+      },
       message: "Expense created successfully",
       expense,
     });
@@ -60,7 +61,6 @@ export const createExpense = async (req, res) => {
 };
 
 export const updateExpense = async (req, res) => {
-  // console.log(req.user.id);
   try {
     const userId = req.user.id; // Authenticated user's ID
     const { id } = req.params; // Expense ID from route params
