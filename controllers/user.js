@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js";
+import Expense from "../models/Expense.js";
+import Income from "../models/Income.js";
+import Goal from "../models/Goal.js";
 
 // for development purposes
 let SALT_ROUNDS = 11;
@@ -50,7 +53,10 @@ export const signUp = async (req, res) => {
     };
 
     const token = jwt.sign(payload, TOKEN_KEY);
-    res.status(201).json({ token });
+    res.status(201).json({
+      token,
+      userId: user._id,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ error: error.message });
@@ -99,6 +105,7 @@ export const signIn = async (req, res) => {
     const token = jwt.sign(payload, TOKEN_KEY);
     res.status(201).json({
       token: token,
+      userId: user._id,
       username: user.username,
       email: user.email,
       dob: user.dob,
@@ -110,7 +117,7 @@ export const signIn = async (req, res) => {
   }
 };
 
-// Verify 
+// Verify
 export const verify = async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
@@ -136,18 +143,28 @@ export const getUserProfile = async (req, res) => {
         .send("Forbidden: You do not have access to this user's data");
     }
 
+    // Find user details without password
     const user = await User.findById(id).select("-password_digest");
 
     if (!user) {
       return res.status(404).send("User not found");
     }
 
+    // Fetch user's expenses, incomes, and goals
+    const expenses = await Expense.find({ userId: id }).sort({ date: -1 });
+    const incomes = await Income.find({ userId: id }).sort({ date: -1 });
+    const goals = await Goal.find({ userId: id }).sort({ createdAt: -1 });
+
+    // Send combined response
     res.status(200).json({
       id: user._id,
       username: user.username,
       email: user.email,
       dob: user.dob,
       totalMoney: user.totalMoney,
+      expenses,
+      incomes,
+      goals,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error.message);
