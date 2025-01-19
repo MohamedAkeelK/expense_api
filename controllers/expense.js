@@ -5,11 +5,9 @@ import User from "../models/User.js";
 // Get all users expenses
 export const getExpensesByUser = async (req, res) => {
   try {
-    console.log("Request Params:", req.params); // Log params to debug
-
     const { id } = req.params; // Using "id" directly
-    console.log("Received User ID:", id);
     const userId = req.user.id; // Extract user ID from authenticated request (JWT middleware must add `req.user`)
+
     // Fetch the user's details
     const user = await User.findById(userId);
 
@@ -23,7 +21,7 @@ export const getExpensesByUser = async (req, res) => {
     if (expenses.length > 0) {
       return res.status(200).json({
         user: {
-          name: user.username, // Assuming the field for the user's name is `username`
+          name: user.username,
           email: user.email,
           totalMoney: user.totalMoney,
         },
@@ -41,8 +39,7 @@ export const getExpensesByUser = async (req, res) => {
 // add a new expense
 export const createExpense = async (req, res) => {
   try {
-    const userId = req.user.id; // Extract user ID from authenticated request (JWT middleware must add `req.user`)
-    // Fetch the user's details
+    const userId = req.user.id; 
     const user = await User.findById(userId);
 
     // Add the userId to the expense data
