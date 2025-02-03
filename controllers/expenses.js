@@ -36,18 +36,26 @@ export const getExpensesByUser = async (req, res) => {
   }
 };
 
-// add a new expense
 export const createExpense = async (req, res) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
     // Add the userId to the expense data
     const expenseData = { ...req.body, userId };
 
+    // Make sure the recurringPeriod is set correctly if isRecurring is true
+    if (expenseData.isRecurring && !expenseData.recurringPeriod) {
+      return res
+        .status(400)
+        .json({ error: "Recurring period is required for recurring expenses" });
+    }
+
     // Create and save the expense
     const expense = new Expense(expenseData);
     await expense.save();
+
+    // Update the user's total money
     await User.findByIdAndUpdate(userId, {
       $inc: { totalMoney: -expense.amount },
     });
@@ -56,7 +64,7 @@ export const createExpense = async (req, res) => {
       user: {
         name: user.username,
         email: user.email,
-        totalMoney: user.totalMoney,
+        totalMoney: user.totalMoney - expense.amount, // Subtract the expense amount from totalMoney
       },
       message: "Expense created successfully",
       expense,
