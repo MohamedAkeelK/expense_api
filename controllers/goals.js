@@ -4,7 +4,9 @@ export const getGoalsByUser = async (req, res) => {
   try {
     const userId = req.user.id; // Extract user ID from authenticated request
 
-    const goals = await Goal.find({ userId }).sort({ createdAt: -1 });
+    const goals = await Goal.find({ userId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "username");
 
     if (goals.length > 0) {
       res.status(200).json(goals);

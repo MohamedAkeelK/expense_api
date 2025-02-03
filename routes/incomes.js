@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as incomeController from "../controllers/income.js";
+import * as incomeController from "../controllers/incomes.js";
 import restrict from "../helpers/restrict.js";
 
 const router = Router();

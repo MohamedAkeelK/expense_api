@@ -21,7 +21,7 @@ const today = new Date();
 const exp = new Date(today);
 exp.setDate(today.getDate() + 30);
 
-export const signUp = async (req, res) => {
+export const Register = async (req, res) => {
   try {
     console.log("signing up");
 
@@ -65,7 +65,7 @@ export const signUp = async (req, res) => {
 
 // Sign in
 
-export const signIn = async (req, res) => {
+export const Login = async (req, res) => {
   try {
     const { email, password_digest } = req.body;
     console.log(req.body);
@@ -130,34 +130,26 @@ export const verify = async (req, res) => {
     res.status(401).send("Not Authorized");
   }
 };
-
 // Get user profile
 export const getUserProfile = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    // Ensure the authenticated user can only access their own profile
-    if (req.user.id !== id) {
-      return res
-        .status(403)
-        .send("Forbidden: You do not have access to this user's data");
-    }
+    const userId = req.user.id; // Use authenticated user's ID from restrict middleware
 
     // Find user details without password
-    const user = await User.findById(id).select("-password_digest");
+    const user = await User.findById(userId).select("-password_digest");
 
     if (!user) {
       return res.status(404).send("User not found");
     }
 
     // Fetch user's expenses, incomes, and goals
-    const expenses = await Expense.find({ userId: id }).sort({ date: -1 });
-    const incomes = await Income.find({ userId: id }).sort({ date: -1 });
-    const goals = await Goal.find({ userId: id }).sort({ createdAt: -1 });
+    const expenses = await Expense.find({ userId }).sort({ date: -1 });
+    const incomes = await Income.find({ userId }).sort({ date: -1 });
+    const goals = await Goal.find({ userId }).sort({ createdAt: -1 });
 
     // Send combined response
     res.status(200).json({
-      id: user._id,
+      userId: user._id,
       username: user.username,
       email: user.email,
       dob: user.dob,

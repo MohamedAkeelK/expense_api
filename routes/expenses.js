@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as expenseController from "../controllers/expense.js";
+import * as expenseController from "../controllers/expenses.js";
 import restrict from "../helpers/restrict.js";
 
 const router = Router();

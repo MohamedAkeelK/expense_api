@@ -31,7 +31,7 @@ const seedDatabase = async () => {
       {
         username: "monkey_king",
         email: "monkeyking@example.com",
-        password_digest: await bcrypt.hash("monkeyman234", 11), 
+        password_digest: await bcrypt.hash("monkeyman234", 11),
         profilePicture: "https://via.placeholder.com/150",
         dob: new Date("2025-01-06T00:59:19.117Z"),
         totalMoney: 30000,
