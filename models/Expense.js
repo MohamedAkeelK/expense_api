@@ -25,16 +25,18 @@ const Expense = new Schema(
     },
     isRecurring: { type: Boolean, default: false },
     recurringPeriod: {
-      type: String,
+      type: String, // Change from [String] to String because it's a single value
       enum: ["daily", "weekly", "monthly", "yearly"],
-      default: null,
+      default: null, // Default to empty string if not provided
       validate: {
         validator: function () {
-          return this.isRecurring ? this.recurringPeriod !== null : true;
+          // If it's a recurring expense, ensure recurringPeriod is not empty
+          return this.isRecurring ? this.recurringPeriod !== "" : true;
         },
         message: "Recurring period must be set for recurring expenses.",
       },
     },
+
     notes: String,
     status: {
       type: String,
