@@ -86,4 +86,4 @@ export const deleteGoal = async (req, res) => {
     console.error("Error deleting goal:", error.message);
     res.status(500).json({ error: error.message });
   }
-};
+};  

@@ -154,6 +154,7 @@ export const getUserProfile = async (req, res) => {
       email: user.email,
       dob: user.dob,
       totalMoney: user.totalMoney,
+      profielPicture: user.profilePicture,
       expenses,
       incomes,
       goals,
